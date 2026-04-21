@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Class Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hot-pink: #ff4d94;
+            --soft-purple: #9d50bb;
+            --folder-top: #ff80b0;
+            --bubble-white: #ffffff;
+            --nav-bg: rgba(255, 255, 255, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Quicksand', sans-serif; }
+
+        body {
+            background: #fce4ec url('background.png') no-repeat center center;
+            background-size: cover; 
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding-bottom: 20px;
+        }
+
+        .presentation-wrapper {
+            width: 90%;
+            height: 82%;
+            display: none; 
+            flex-direction: column;
+            z-index: 10;
+            animation: popIn 0.4s ease;
+        }
+
+        /* BIGGER FOLDER TAB BAR */
+        .sub-tab-bar {
+            display: flex;
+            gap: 8px;
+            padding-left: 40px;
+            align-items: flex-end;
+        }
+
+        /* BIGGER FOLDER TABS */
+        .folder-tab {
+            padding: 15px 45px; /* Increased padding for a larger touch target */
+            background: var(--folder-top);
+            color: white;
+            border: none;
+            border-radius: 25px 25px 0 0; /* Rounded top corners */
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.2rem; /* Bigger font size */
+            font-family: 'Fredoka', sans-serif;
+            transition: all 0.2s ease;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            opacity: 0.85;
+            margin-bottom: -2px; 
+        }
+
+        .folder-tab.active {
+            background: white;
+            color: var(--soft-purple);
+            padding-top: 20px; /* Makes the active tab slightly taller */
+            opacity: 1;
+            z-index: 11;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        }
+
+        .presentation-container {
+            flex: 1;
+            background: var(--bubble-white);
+            border: 10px solid white;
+            border-radius: 0 50px 50px 50px; 
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: var(--hot-pink);
+            color: white;
+            border: 4px solid white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-content { display: none; flex: 1; height: 100%; overflow: hidden; }
+        .tab-content.active { display: flex; flex-direction: column; }
+        .content-area { flex: 1; position: relative; width: 100%; height: 100%; }
+        .canva-frame { width: 100%; height: 100%; border: none; }
+
+        .image-container {
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: white; padding: 25px;
+        }
+
+        .seamless-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 20px; }
+
+        .main-nav {
+            position: fixed;
+            bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px 40px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 80px;
+            border: 4px solid white;
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn {
+            padding: 18px 45px;
+            border: none;
+            background: white;
+            color: var(--hot-pink);
+            cursor: pointer;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            font-size: 1.4rem;
+            border-radius: 60px;
+            transition: 0.2s;
+        }
+
+        .nav-btn.active { background: var(--hot-pink); color: white; transform: translateY(3px); }
+
+        .fs-toggle {
+            background: var(--soft-purple);
+            color: white;
+            width: 70px; height: 70px;
+            border-radius: 50%; border: 4px solid white;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            margin-left: 15px; font-size: 1.6rem;
+        }
+
+        .big-title { font-size: 6rem; color: var(--hot-pink); text-align: center; margin: auto; font-family: 'Fredoka'; }
+
+        @keyframes popIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-wrapper" id="masterWrapper">
+        <div class="sub-tab-bar" id="lessonSubNav" style="display:none;">
+            <button class="folder-tab active" onclick="showSubTab('s1')">Subject</button>
+            <button class="folder-tab" onclick="showSubTab('s2')">Objectives</button>
+            <button class="folder-tab" onclick="showSubTab('s3')">Warm-Up</button>
+            <button class="folder-tab" onclick="showSubTab('s4')">Stations</button>
+            <button class="folder-tab" onclick="showSubTab('s5')">Assessment</button>
+        </div>
+
+        <div class="presentation-container">
+            <button class="close-btn" onclick="closeAll()">✕</button>
+
+            <div id="intro" class="tab-content">
+                <div class="content-area">
+                    <iframe class="canva-frame" src="https://www.canva.com/design/DAHHXZfG8RY/6IszJrRHz_bhNAGG87MA5A/view?embed" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div id="lesson" class="tab-content">
+                <div id="s1" class="sub-content active">
+                    <div class="image-container"><img src="subject_matter.png" class="seamless-img"></div>
+                </div>
+                <div id="s2" class="sub-content" style="display:none;">
+                    <div class="image-container"><img src="objectives.png" class="seamless-img"></div>
+                </div>
+                <div id="s3" class="sub-content" style="display:none;"><h1 class="big-title">Warm-Up</h1></div>
+                <div id="s4" class="sub-content" style="display:none;"><h1 class="big-title">Stations</h1></div>
+                <div id="s5" class="sub-content" style="display:none;"><h1 class="big-title">Assessment</h1></div>
+            </div>
+
+            <div id="questions" class="tab-content"><h1 class="big-title">QUESTIONS?</h1></div>
+            <div id="thanks" class="tab-content"><h1 class="big-title">THANK YOU!</h1></div>
+        </div>
+    </div>
+
+    <nav class="main-nav">
+        <button class="nav-btn" onclick="openTab(event, 'intro')">Introduction</button>
+        <button class="nav-btn" onclick="openTab(event, 'lesson')">Lesson Plan</button>
+        <button class="nav-btn" onclick="openTab(event, 'questions')">Questions</button>
+        <button class="nav-btn" onclick="openTab(event, 'thanks')">Exit</button>
+        <button class="fs-toggle" onclick="toggleFullscreen()">⛶</button>
+    </nav>
+
+<script>
+    function openTab(evt, tabId) {
+        document.getElementById('masterWrapper').style.display = 'flex';
+        document.getElementById('lessonSubNav').style.display = (tabId === 'lesson') ? 'flex' : 'none';
+
+        var contents = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < contents.length; i++) { 
+            contents[i].style.display = "none"; 
+            contents[i].classList.remove("active"); 
+        }
+        
+        var buttons = document.getElementsByClassName("nav-btn");
+        for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove("active"); }
+        
+        document.getElementById(tabId).style.display = "flex";
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function closeAll() {
+        document.getElementById('masterWrapper').style.display = 'none';
+        var buttons = document.getElementsByClassName("nav-btn");
+        for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove("active"); }
+    }
+
+    function showSubTab(subId) {
+        var subContents = document.getElementsByClassName("sub-content");
+        for (var i = 0; i < subContents.length; i++) { subContents[i].style.display = "none"; }
+        
+        var subBtns = document.getElementsByClassName("folder-tab");
+        for (var i = 0; i < subBtns.length; i++) { subBtns[i].classList.remove("active"); }
+        
+        document.getElementById(subId).style.display = "block";
+        event.currentTarget.classList.add("active");
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+        else { document.exitFullscreen(); }
+    }
+</script>
+</body>
+</html>
