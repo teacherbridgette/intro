@@ -172,7 +172,19 @@
         }
 
         .embed-container { width: 100%; height: 100%; display: none; position: relative; z-index: 5; background: white; }
-        iframe { width: 100%; height: 100%; border: none; }
+        iframe, object { width: 100%; height: 100%; border: none; }
+
+        /* Backup Link Style */
+        .backup-trigger {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: #ccc;
+            cursor: pointer;
+            z-index: 200;
+            text-decoration: none;
+        }
 
         .main-nav {
             position: fixed;
@@ -230,13 +242,14 @@
 
         <div class="presentation-container">
             <button class="close-btn" onclick="closeAll()">✕</button>
-            
             <button class="back-btn" id="backToMenu" onclick="handleBack()">← Back</button>
             
             <video id="bgVideo" src="bg.mp4" loop muted playsinline></video>
 
             <div id="intro" class="tab-content">
-                <iframe src="https://www.canva.com/design/DAHHXZfG8RY/6IszJrRHz_bhNAGG87MA5A/view?embed" allowfullscreen></iframe>
+                <iframe id="frameIntro" src="https://www.canva.com/design/DAHHXZfG8RY/6IszJrRHz_bhNAGG87MA5A/view?embed" allowfullscreen></iframe>
+                <object id="backupIntro" data="Introduction.pdf" type="application/pdf" style="display:none;"></object>
+                <a class="backup-trigger" onclick="toggleBackup('Intro')">Load Backup</a>
             </div>
 
             <div id="lesson" class="tab-content">
@@ -251,7 +264,6 @@
                 </div>
 
                 <div id="s5" class="sub-content" style="display:none;">
-                    
                     <div id="assessmentMenu" class="assessment-grid">
                         <div class="card" onmouseover="playHover()" onclick="showEmbed('embedLP')">Learning Passport</div>
                         <div class="card" onmouseover="playHover()" onclick="showEmbed('embedTA')">Tiered Assessment</div>
@@ -259,9 +271,21 @@
                         <div class="card" onmouseover="playHover()" onclick="openGames()">HTML Coded Station Games</div>
                     </div>
 
-                    <div id="embedLP" class="embed-container"><iframe src="https://www.canva.com/design/DAHHiba7uX8/ZMkJtfp8fP2Y8CI6Yd4wKA/view?embed" allowfullscreen></iframe></div>
-                    <div id="embedTA" class="embed-container"><iframe src="https://www.canva.com/design/DAHHiX1MXfk/zEYF-6n22Tvf9PoJD-YLhQ/view?embed" allowfullscreen></iframe></div>
-                    <div id="embedSP" class="embed-container"><iframe src="https://www.canva.com/design/DAHHie53l_8/fMHav7G9iRkoy_0dnEdE8A/view?embed" allowfullscreen></iframe></div>
+                    <div id="embedLP" class="embed-container">
+                        <iframe id="frameLP" src="https://www.canva.com/design/DAHHiba7uX8/ZMkJtfp8fP2Y8CI6Yd4wKA/view?embed" allowfullscreen></iframe>
+                        <object id="backupLP" data="Learning Passport.pdf" type="application/pdf" style="display:none;"></object>
+                        <a class="backup-trigger" onclick="toggleBackup('LP')">Load Backup</a>
+                    </div>
+                    <div id="embedTA" class="embed-container">
+                        <iframe id="frameTA" src="https://www.canva.com/design/DAHHiX1MXfk/zEYF-6n22Tvf9PoJD-YLhQ/view?embed" allowfullscreen></iframe>
+                        <object id="backupTA" data="Tiered Assessment.pdf" type="application/pdf" style="display:none;"></object>
+                        <a class="backup-trigger" onclick="toggleBackup('TA')">Load Backup</a>
+                    </div>
+                    <div id="embedSP" class="embed-container">
+                        <iframe id="frameSP" src="https://www.canva.com/design/DAHHie53l_8/fMHav7G9iRkoy_0dnEdE8A/view?embed" allowfullscreen></iframe>
+                        <object id="backupSP" data="Station Posters.pdf" type="application/pdf" style="display:none;"></object>
+                        <a class="backup-trigger" onclick="toggleBackup('SP')">Load Backup</a>
+                    </div>
 
                     <div id="gamesMenu" class="games-grid" style="display:none;">
                         <div class="card" onmouseover="playHover()" onclick="showGame('g1')">Sing</div>
@@ -302,9 +326,22 @@
 <script>
     const hoverSound = document.getElementById('hoverSound');
     const bgVid = document.getElementById('bgVideo');
-    let currentView = 'menu'; // menu, games, content
+    let currentView = 'menu';
 
     function playHover() { hoverSound.currentTime = 0; hoverSound.play().catch(e=>{}); }
+
+    // Backup Logic
+    function toggleBackup(key) {
+        const frame = document.getElementById('frame' + key);
+        const backup = document.getElementById('backup' + key);
+        if (frame.style.display !== 'none') {
+            frame.style.display = 'none';
+            backup.style.display = 'block';
+        } else {
+            frame.style.display = 'block';
+            backup.style.display = 'none';
+        }
+    }
 
     function openTab(evt, tabId) {
         document.getElementById('masterWrapper').style.display = 'flex';
