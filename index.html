@@ -12,6 +12,7 @@
             --folder-top: #ff80b0;
             --bubble-white: #ffffff;
             --nav-bg: rgba(255, 255, 255, 0.6);
+            --card-shadow: rgba(255, 77, 148, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Quicksand', sans-serif; }
@@ -38,7 +39,6 @@
             animation: popIn 0.4s ease;
         }
 
-        /* BIGGER FOLDER TAB BAR */
         .sub-tab-bar {
             display: flex;
             gap: 8px;
@@ -46,16 +46,15 @@
             align-items: flex-end;
         }
 
-        /* BIGGER FOLDER TABS */
         .folder-tab {
-            padding: 15px 45px; /* Increased padding for a larger touch target */
+            padding: 15px 45px;
             background: var(--folder-top);
             color: white;
             border: none;
-            border-radius: 25px 25px 0 0; /* Rounded top corners */
+            border-radius: 25px 25px 0 0;
             cursor: pointer;
             font-weight: 700;
-            font-size: 1.2rem; /* Bigger font size */
+            font-size: 1.2rem;
             font-family: 'Fredoka', sans-serif;
             transition: all 0.2s ease;
             box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
@@ -66,7 +65,7 @@
         .folder-tab.active {
             background: white;
             color: var(--soft-purple);
-            padding-top: 20px; /* Makes the active tab slightly taller */
+            padding-top: 20px;
             opacity: 1;
             z-index: 11;
             box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
@@ -84,6 +83,17 @@
             overflow: hidden;
         }
 
+        #bgVideo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            display: none;
+        }
+
         .close-btn {
             position: absolute;
             top: 20px;
@@ -96,24 +106,73 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.5rem;
-            z-index: 120;
+            z-index: 150;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .tab-content { display: none; flex: 1; height: 100%; overflow: hidden; }
-        .tab-content.active { display: flex; flex-direction: column; }
-        .content-area { flex: 1; position: relative; width: 100%; height: 100%; }
-        .canva-frame { width: 100%; height: 100%; border: none; }
-
-        .image-container {
-            width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: white; padding: 25px;
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            background: var(--soft-purple);
+            color: white;
+            border: 3px solid white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 150;
+            display: none;
+            font-family: 'Fredoka', sans-serif;
         }
 
-        .seamless-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 20px; }
+        .tab-content { display: none; flex: 1; height: 100%; overflow: hidden; position: relative; }
+        .tab-content.active { display: flex; flex-direction: column; }
+        .sub-content { width: 100%; height: 100%; position: relative; z-index: 2; }
+
+        .content-video { width: 100%; height: 100%; object-fit: contain; background: black; }
+
+        .assessment-grid, .games-grid {
+            display: grid;
+            gap: 25px;
+            padding: 60px;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .assessment-grid { grid-template-columns: repeat(2, 1fr); }
+        .games-grid { grid-template-columns: repeat(3, 1fr); }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #ffdae9;
+            border-radius: 30px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: var(--hot-pink);
+            box-shadow: 0 8px 0 #ffdae9;
+            transition: 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: var(--hot-pink);
+            color: white;
+            box-shadow: 0 15px 30px rgba(255, 77, 148, 0.4);
+            border-color: white;
+        }
+
+        .embed-container { width: 100%; height: 100%; display: none; position: relative; z-index: 5; background: white; }
+        iframe { width: 100%; height: 100%; border: none; }
 
         .main-nav {
             position: fixed;
@@ -143,7 +202,7 @@
             transition: 0.2s;
         }
 
-        .nav-btn.active { background: var(--hot-pink); color: white; transform: translateY(3px); }
+        .nav-btn.active { background: var(--hot-pink); color: white; }
 
         .fs-toggle {
             background: var(--soft-purple);
@@ -154,45 +213,81 @@
             margin-left: 15px; font-size: 1.6rem;
         }
 
-        .big-title { font-size: 6rem; color: var(--hot-pink); text-align: center; margin: auto; font-family: 'Fredoka'; }
-
         @keyframes popIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
+    <audio id="hoverSound" src="hover.mp3" preload="auto"></audio>
+
     <div class="presentation-wrapper" id="masterWrapper">
         <div class="sub-tab-bar" id="lessonSubNav" style="display:none;">
             <button class="folder-tab active" onclick="showSubTab('s1')">Subject</button>
             <button class="folder-tab" onclick="showSubTab('s2')">Objectives</button>
-            <button class="folder-tab" onclick="showSubTab('s3')">Warm-Up</button>
             <button class="folder-tab" onclick="showSubTab('s4')">Stations</button>
             <button class="folder-tab" onclick="showSubTab('s5')">Assessment</button>
         </div>
 
         <div class="presentation-container">
             <button class="close-btn" onclick="closeAll()">✕</button>
+            
+            <button class="back-btn" id="backToMenu" onclick="handleBack()">← Back</button>
+            
+            <video id="bgVideo" src="bg.mp4" loop muted playsinline></video>
 
             <div id="intro" class="tab-content">
-                <div class="content-area">
-                    <iframe class="canva-frame" src="https://www.canva.com/design/DAHHXZfG8RY/6IszJrRHz_bhNAGG87MA5A/view?embed" allowfullscreen></iframe>
-                </div>
+                <iframe src="https://www.canva.com/design/DAHHXZfG8RY/6IszJrRHz_bhNAGG87MA5A/view?embed" allowfullscreen></iframe>
             </div>
 
             <div id="lesson" class="tab-content">
                 <div id="s1" class="sub-content active">
-                    <div class="image-container"><img src="subject_matter.png" class="seamless-img"></div>
+                    <img src="subject_matter.png" style="width:100%; height:100%; object-fit:contain;">
                 </div>
                 <div id="s2" class="sub-content" style="display:none;">
-                    <div class="image-container"><img src="objectives.png" class="seamless-img"></div>
+                    <img src="objectives.png" style="width:100%; height:100%; object-fit:contain;">
                 </div>
-                <div id="s3" class="sub-content" style="display:none;"><h1 class="big-title">Warm-Up</h1></div>
-                <div id="s4" class="sub-content" style="display:none;"><h1 class="big-title">Stations</h1></div>
-                <div id="s5" class="sub-content" style="display:none;"><h1 class="big-title">Assessment</h1></div>
+                <div id="s4" class="sub-content" style="display:none;">
+                    <iframe src="https://teacherbridgette.github.io/openclass/"></iframe>
+                </div>
+
+                <div id="s5" class="sub-content" style="display:none;">
+                    
+                    <div id="assessmentMenu" class="assessment-grid">
+                        <div class="card" onmouseover="playHover()" onclick="showEmbed('embedLP')">Learning Passport</div>
+                        <div class="card" onmouseover="playHover()" onclick="showEmbed('embedTA')">Tiered Assessment</div>
+                        <div class="card" onmouseover="playHover()" onclick="showEmbed('embedSP')">Learning Station Posters</div>
+                        <div class="card" onmouseover="playHover()" onclick="openGames()">HTML Coded Station Games</div>
+                    </div>
+
+                    <div id="embedLP" class="embed-container"><iframe src="https://www.canva.com/design/DAHHiba7uX8/ZMkJtfp8fP2Y8CI6Yd4wKA/view?embed" allowfullscreen></iframe></div>
+                    <div id="embedTA" class="embed-container"><iframe src="https://www.canva.com/design/DAHHiX1MXfk/zEYF-6n22Tvf9PoJD-YLhQ/view?embed" allowfullscreen></iframe></div>
+                    <div id="embedSP" class="embed-container"><iframe src="https://www.canva.com/design/DAHHie53l_8/fMHav7G9iRkoy_0dnEdE8A/view?embed" allowfullscreen></iframe></div>
+
+                    <div id="gamesMenu" class="games-grid" style="display:none;">
+                        <div class="card" onmouseover="playHover()" onclick="showGame('g1')">Sing</div>
+                        <div class="card" onmouseover="playHover()" onclick="showGame('g2')">Dance</div>
+                        <div class="card" onmouseover="playHover()" onclick="showGame('g3')">Read</div>
+                        <div class="card" onmouseover="playHover()" onclick="showGame('g4')">Write</div>
+                        <div class="card" onmouseover="playHover()" onclick="showGame('g5')">Draw</div>
+                        <div class="card" onmouseover="playHover()" onclick="showGame('g6')">Recording Station</div>
+                    </div>
+
+                    <div id="g1" class="embed-container"><iframe src="https://teacherbridgette.github.io/sing/"></iframe></div>
+                    <div id="g2" class="embed-container"><iframe src="https://teacherbridgette.github.io/dance/"></iframe></div>
+                    <div id="g3" class="embed-container"><iframe src="https://teacherbridgette.github.io/read/"></iframe></div>
+                    <div id="g4" class="embed-container"><iframe src="https://teacherbridgette.github.io/write/"></iframe></div>
+                    <div id="g5" class="embed-container"><iframe src="https://teacherbridgette.github.io/draw/"></iframe></div>
+                    <div id="g6" class="embed-container"><iframe src="https://teacherbridgette.github.io/businessclass/"></iframe></div>
+                </div>
             </div>
 
-            <div id="questions" class="tab-content"><h1 class="big-title">QUESTIONS?</h1></div>
-            <div id="thanks" class="tab-content"><h1 class="big-title">THANK YOU!</h1></div>
+            <div id="questions" class="tab-content">
+                <video class="content-video" src="questions.mp4" autoplay loop muted playsinline></video>
+            </div>
+
+            <div id="thanks" class="tab-content">
+                <video class="content-video" src="exit.mp4" autoplay loop muted playsinline></video>
+            </div>
         </div>
     </div>
 
@@ -205,44 +300,103 @@
     </nav>
 
 <script>
+    const hoverSound = document.getElementById('hoverSound');
+    const bgVid = document.getElementById('bgVideo');
+    let currentView = 'menu'; // menu, games, content
+
+    function playHover() { hoverSound.currentTime = 0; hoverSound.play().catch(e=>{}); }
+
     function openTab(evt, tabId) {
         document.getElementById('masterWrapper').style.display = 'flex';
         document.getElementById('lessonSubNav').style.display = (tabId === 'lesson') ? 'flex' : 'none';
-
+        bgVid.style.display = 'none';
+        bgVid.pause();
+        resetToMainMenu();
         var contents = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < contents.length; i++) { 
-            contents[i].style.display = "none"; 
-            contents[i].classList.remove("active"); 
-        }
-        
+        for (var i = 0; i < contents.length; i++) { contents[i].style.display = "none"; }
         var buttons = document.getElementsByClassName("nav-btn");
         for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove("active"); }
-        
         document.getElementById(tabId).style.display = "flex";
-        document.getElementById(tabId).classList.add("active");
         evt.currentTarget.classList.add("active");
-    }
-
-    function closeAll() {
-        document.getElementById('masterWrapper').style.display = 'none';
-        var buttons = document.getElementsByClassName("nav-btn");
-        for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove("active"); }
     }
 
     function showSubTab(subId) {
         var subContents = document.getElementsByClassName("sub-content");
         for (var i = 0; i < subContents.length; i++) { subContents[i].style.display = "none"; }
-        
         var subBtns = document.getElementsByClassName("folder-tab");
         for (var i = 0; i < subBtns.length; i++) { subBtns[i].classList.remove("active"); }
-        
         document.getElementById(subId).style.display = "block";
         event.currentTarget.classList.add("active");
+
+        if(subId === 's5') {
+            bgVid.style.display = 'block';
+            bgVid.play();
+            resetToMainMenu();
+        } else {
+            bgVid.style.display = 'none';
+            bgVid.pause();
+        }
+    }
+
+    function showEmbed(id) {
+        hideAllAssessmentViews();
+        document.getElementById(id).style.display = 'block';
+        document.getElementById('backToMenu').style.display = 'block';
+        bgVid.style.display = 'none';
+        currentView = 'content';
+    }
+
+    function openGames() {
+        hideAllAssessmentViews();
+        document.getElementById('gamesMenu').style.display = 'grid';
+        document.getElementById('backToMenu').style.display = 'block';
+        bgVid.style.display = 'block';
+        currentView = 'games';
+    }
+
+    function showGame(id) {
+        hideAllAssessmentViews();
+        document.getElementById(id).style.display = 'block';
+        document.getElementById('backToMenu').style.display = 'block';
+        bgVid.style.display = 'none';
+        currentView = 'game-content';
+    }
+
+    function handleBack() {
+        if (currentView === 'game-content') {
+            openGames();
+        } else {
+            resetToMainMenu();
+        }
+    }
+
+    function resetToMainMenu() {
+        hideAllAssessmentViews();
+        document.getElementById('assessmentMenu').style.display = 'grid';
+        document.getElementById('backToMenu').style.display = 'none';
+        if (document.getElementById('s5').style.display !== 'none') {
+            bgVid.style.display = 'block';
+        }
+        currentView = 'menu';
+    }
+
+    function hideAllAssessmentViews() {
+        document.getElementById('assessmentMenu').style.display = 'none';
+        document.getElementById('gamesMenu').style.display = 'none';
+        var embeds = document.getElementsByClassName('embed-container');
+        for (var i = 0; i < embeds.length; i++) { embeds[i].style.display = 'none'; }
     }
 
     function toggleFullscreen() {
         if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
         else { document.exitFullscreen(); }
+    }
+
+    function closeAll() {
+        document.getElementById('masterWrapper').style.display = 'none';
+        bgVid.pause();
+        var buttons = document.getElementsByClassName("nav-btn");
+        for (var i = 0; i < buttons.length; i++) { buttons[i].classList.remove("active"); }
     }
 </script>
 </body>
